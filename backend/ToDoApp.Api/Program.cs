@@ -1,9 +1,20 @@
+using ToDoApp.DataAccess;
+using ToDoApp.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Register services in the DI container ---
 
 // Registers controller support (MVC controllers without views).
 builder.Services.AddControllers();
+
+// Data-access layer: EF Core DbContext bound to the SQL Server connection string.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDataAccess(connectionString);
+
+// Business-logic layer.
+builder.Services.AddServices();
 
 // Swagger / OpenAPI: generates an interactive API explorer at /swagger.
 builder.Services.AddEndpointsApiExplorer();
