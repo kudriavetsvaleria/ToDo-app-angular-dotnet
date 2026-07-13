@@ -17,13 +17,24 @@ public class TaskRepository : ITaskRepository
         _db = db;
     }
 
-    public async Task<List<TaskItem>> GetAllAsync(int userId, CancellationToken ct = default)
+    public async Task<(List<TaskItem> Items, int TotalCount)> GetPagedAsync(int userId, int page, int pageSize, CancellationToken ct = default)
     {
-        return await _db.Tasks
-            .Include(t => t.Category)   // load the related category so we can show its name
+        // Build the base query (not executed yet — just a description of what we want).
+        var query = _db.Tasks
+            .Include(t => t.Category)
             .Where(t => t.UserId == userId)
-            .OrderByDescending(t => t.CreatedAt)
+            .OrderBy(t => t.CreatedAt);
+
+        // 1. How many tasks match in total (for TotalCount / TotalPages)?
+        var totalCount = await query.CountAsync(ct);
+
+        // 2. Take only the requested page.
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(ct);
+
+        return (items, totalCount);
     }
 
     public async Task<TaskItem?> GetByIdAsync(int id, int userId, CancellationToken ct = default)

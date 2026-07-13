@@ -18,11 +18,13 @@ public class TasksController : ControllerBase
     // TODO (auth step): replace this hard-coded id with the user id from the JWT token.
     private const int TempUserId = 1;
 
-    // GET /api/tasks
+    // GET /api/tasks?page=1&pageSize=10
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TaskResponse>>> GetAll()
+    public async Task<ActionResult<PagedResult<TaskResponse>>> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var tasks = await _taskService.GetTasksAsync(TempUserId);
+        var tasks = await _taskService.GetTasksAsync(TempUserId, page, pageSize);
         return Ok(tasks);
     }
 

@@ -18,10 +18,23 @@ public class TaskService : ITaskService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<TaskResponse>> GetTasksAsync(int userId)
+    public async Task<PagedResult<TaskResponse>> GetTasksAsync(int userId, int page, int pageSize)
     {
-        var tasks = await _repository.GetAllAsync(userId);
-        return tasks.Select(MapToResponse);
+        // Ask the repository for one page of tasks + the total count.
+        var (tasks, totalCount) = await _repository.GetPagedAsync(userId, page, pageSize);
+
+        // Round UP: 25 items / 10 per page = 2.5 -> 3 pages (last page is partial).
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        // Pack everything into the envelope, mapping entities -> DTOs.
+        return new PagedResult<TaskResponse>
+        {
+            Items = tasks.Select(MapToResponse),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
 
     public async Task<TaskResponse?> GetTaskAsync(int id, int userId)
