@@ -17,19 +17,28 @@ public class TaskRepository : ITaskRepository
         _db = db;
     }
 
-    public async Task<(List<TaskItem> Items, int TotalCount)> GetPagedAsync(int userId, int page, int pageSize, CancellationToken ct = default)
+    public async Task<(List<TaskItem> Items, int TotalCount)> GetPagedAsync(
+        int userId, int page, int pageSize, string? search, int? categoryId, CancellationToken ct = default)
     {
-        // Build the base query (not executed yet — just a description of what we want).
+        // Start with "this user's tasks" (not executed yet — just a description).
         var query = _db.Tasks
             .Include(t => t.Category)
-            .Where(t => t.UserId == userId)
-            .OrderBy(t => t.CreatedAt);
+            .Where(t => t.UserId == userId);
 
-        // 1. How many tasks match in total (for TotalCount / TotalPages)?
+        // Sieve 1: filter by category, only if one was provided.
+        if (categoryId.HasValue)
+            query = query.Where(t => t.CategoryId == categoryId.Value);
+
+        // Sieve 2: search by title, only if search text was provided.
+        if (!string.IsNullOrWhiteSpace(search))
+            query = query.Where(t => t.Title.Contains(search));
+
+        // Count what's left AFTER the sieves (so paging is correct).
         var totalCount = await query.CountAsync(ct);
 
-        // 2. Take only the requested page.
+        // Then order and take the requested page.
         var items = await query
+            .OrderBy(t => t.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);

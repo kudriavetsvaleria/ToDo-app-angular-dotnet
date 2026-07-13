@@ -18,10 +18,10 @@ public class TaskService : ITaskService
         _repository = repository;
     }
 
-    public async Task<PagedResult<TaskResponse>> GetTasksAsync(int userId, int page, int pageSize)
+    public async Task<PagedResult<TaskResponse>> GetTasksAsync(int userId, int page, int pageSize, string? search, int? categoryId)
     {
-        // Ask the repository for one page of tasks + the total count.
-        var (tasks, totalCount) = await _repository.GetPagedAsync(userId, page, pageSize);
+        // Ask the repository for one page of (optionally filtered) tasks + total count.
+        var (tasks, totalCount) = await _repository.GetPagedAsync(userId, page, pageSize, search, categoryId);
 
         // Round UP: 25 items / 10 per page = 2.5 -> 3 pages (last page is partial).
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);

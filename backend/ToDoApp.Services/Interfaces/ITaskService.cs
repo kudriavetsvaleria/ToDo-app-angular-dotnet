@@ -8,7 +8,7 @@ namespace ToDoApp.Services.Interfaces;
 /// </summary>
 public interface ITaskService
 {
-    Task<PagedResult<TaskResponse>> GetTasksAsync(int userId, int page, int pageSize);
+    Task<PagedResult<TaskResponse>> GetTasksAsync(int userId, int page, int pageSize, string? search, int? categoryId);
     Task<TaskResponse?> GetTaskAsync(int id, int userId);
     Task<TaskResponse> CreateTaskAsync(int userId, CreateTaskRequest request);
     Task<bool> UpdateTaskAsync(int id, int userId, UpdateTaskRequest request);

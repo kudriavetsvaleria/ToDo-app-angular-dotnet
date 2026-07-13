@@ -8,7 +8,8 @@ namespace ToDoApp.DataAccess.Repositories;
 /// </summary>
 public interface ITaskRepository
 {
-    Task<(List<TaskItem> Items, int TotalCount)> GetPagedAsync(int userId, int page, int pageSize, CancellationToken ct = default);
+    Task<(List<TaskItem> Items, int TotalCount)> GetPagedAsync(
+        int userId, int page, int pageSize, string? search, int? categoryId, CancellationToken ct = default);
     Task<TaskItem?> GetByIdAsync(int id, int userId, CancellationToken ct = default);
     Task AddAsync(TaskItem task, CancellationToken ct = default);
     void Update(TaskItem task);
