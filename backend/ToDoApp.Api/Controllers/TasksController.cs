@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoApp.Domain.Dtos;
 using ToDoApp.Services.Interfaces;
@@ -5,6 +7,7 @@ using ToDoApp.Services.Interfaces;
 namespace ToDoApp.Api.Controllers;
 
 [ApiController]
+[Authorize] // every endpoint here requires a valid JWT
 [Route("api/[controller]")] // -> /api/tasks
 public class TasksController : ControllerBase
 {
@@ -15,8 +18,8 @@ public class TasksController : ControllerBase
         _taskService = taskService;
     }
 
-    // TODO (auth step): replace this hard-coded id with the user id from the JWT token.
-    private const int TempUserId = 1;
+    // The authenticated user's id, read from the JWT (the NameIdentifier claim we put in the token).
+    private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     // GET /api/tasks?page=1&pageSize=10&search=milk&categoryId=2
     [HttpGet]
@@ -26,7 +29,7 @@ public class TasksController : ControllerBase
         [FromQuery] string? search = null,
         [FromQuery] int? categoryId = null)
     {
-        var tasks = await _taskService.GetTasksAsync(TempUserId, page, pageSize, search, categoryId);
+        var tasks = await _taskService.GetTasksAsync(CurrentUserId, page, pageSize, search, categoryId);
         return Ok(tasks);
     }
 
@@ -34,7 +37,7 @@ public class TasksController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<TaskResponse>> GetById(int id)
     {
-        var task = await _taskService.GetTaskAsync(id, TempUserId);
+        var task = await _taskService.GetTaskAsync(id, CurrentUserId);
         return task is null ? NotFound() : Ok(task);
     }
 
@@ -42,7 +45,7 @@ public class TasksController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TaskResponse>> Create(CreateTaskRequest request)
     {
-        var created = await _taskService.CreateTaskAsync(TempUserId, request);
+        var created = await _taskService.CreateTaskAsync(CurrentUserId, request);
         // 201 Created + Location header pointing at the new resource.
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
@@ -51,7 +54,7 @@ public class TasksController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, UpdateTaskRequest request)
     {
-        var updated = await _taskService.UpdateTaskAsync(id, TempUserId, request);
+        var updated = await _taskService.UpdateTaskAsync(id, CurrentUserId, request);
         return updated ? NoContent() : NotFound();
     }
 
@@ -59,7 +62,7 @@ public class TasksController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await _taskService.DeleteTaskAsync(id, TempUserId);
+        var deleted = await _taskService.DeleteTaskAsync(id, CurrentUserId);
         return deleted ? NoContent() : NotFound();
     }
 }

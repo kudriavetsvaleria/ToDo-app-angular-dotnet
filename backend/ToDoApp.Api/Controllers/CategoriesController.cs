@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoApp.Domain.Dtos;
 using ToDoApp.Services.Interfaces;
@@ -5,6 +7,7 @@ using ToDoApp.Services.Interfaces;
 namespace ToDoApp.Api.Controllers;
 
 [ApiController]
+[Authorize] // every endpoint here requires a valid JWT
 [Route("api/[controller]")] // -> /api/categories
 public class CategoriesController : ControllerBase
 {
@@ -15,14 +18,14 @@ public class CategoriesController : ControllerBase
         _categoryService = categoryService;
     }
 
-    // TODO (auth step): replace this hard-coded id with the user id from the JWT token.
-    private const int TempUserId = 1;
+    // The authenticated user's id, read from the JWT (the NameIdentifier claim we put in the token).
+    private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     // GET /api/categories
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetAll()
     {
-        var categories = await _categoryService.GetCategoriesAsync(TempUserId);
+        var categories = await _categoryService.GetCategoriesAsync(CurrentUserId);
         return Ok(categories);
     }
 
@@ -30,7 +33,7 @@ public class CategoriesController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CategoryResponse>> GetById(int id)
     {
-        var category = await _categoryService.GetCategoryAsync(id, TempUserId);
+        var category = await _categoryService.GetCategoryAsync(id, CurrentUserId);
         return category is null ? NotFound() : Ok(category);
     }
 
@@ -38,7 +41,7 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CategoryResponse>> Create(CategoryRequest request)
     {
-        var created = await _categoryService.CreateCategoryAsync(TempUserId, request);
+        var created = await _categoryService.CreateCategoryAsync(CurrentUserId, request);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
@@ -46,7 +49,7 @@ public class CategoriesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, CategoryRequest request)
     {
-        var updated = await _categoryService.UpdateCategoryAsync(id, TempUserId, request);
+        var updated = await _categoryService.UpdateCategoryAsync(id, CurrentUserId, request);
         return updated ? NoContent() : NotFound();
     }
 
@@ -54,7 +57,7 @@ public class CategoriesController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await _categoryService.DeleteCategoryAsync(id, TempUserId);
+        var deleted = await _categoryService.DeleteCategoryAsync(id, CurrentUserId);
         return deleted ? NoContent() : NotFound();
     }
 }

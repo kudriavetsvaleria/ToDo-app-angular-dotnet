@@ -7,7 +7,7 @@ public class User
 {
     public int Id { get; set; }
 
-    public string Email { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
 
     /// <summary>Hashed password — we never store the plain password.</summary>
     public string PasswordHash { get; set; } = string.Empty;

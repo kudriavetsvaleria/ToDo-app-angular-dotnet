@@ -24,8 +24,8 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.Property(u => u.Email).IsRequired().HasMaxLength(256);
-            entity.HasIndex(u => u.Email).IsUnique(); // no two users with the same email
+            entity.Property(u => u.Username).IsRequired().HasMaxLength(100);
+            entity.HasIndex(u => u.Username).IsUnique(); // no two users with the same login
             entity.Property(u => u.PasswordHash).IsRequired();
 
             // Deleting a user deletes their tasks and categories.
@@ -65,7 +65,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<User>().HasData(new User
         {
             Id = 1,
-            Email = "seed@dev.local",
+            Username = "seeduser",
             PasswordHash = "SEED_PLACEHOLDER",
             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
