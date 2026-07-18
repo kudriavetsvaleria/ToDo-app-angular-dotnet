@@ -9,6 +9,7 @@ import { AuthRequest, AuthResponse } from '../models/auth.model';
 })
 export class AuthService {
   private readonly apiUrl = `${environment.apiUrl}/auth`;
+  private readonly tokenKey = 'auth_token';
 
   constructor(private http: HttpClient) { }
 
@@ -18,5 +19,17 @@ export class AuthService {
 
   login(credentials: AuthRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials);
+  }
+
+  saveToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
   }
 }
