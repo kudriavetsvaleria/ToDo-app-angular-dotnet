@@ -42,12 +42,14 @@
           } @else {
             <ul class="space-y-2">
               @for (task of tasks; track task.id) {
-                <li class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3">
-                  @if (task.isCompleted) {
-                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">✓</span>
-                  } @else {
-                    <span class="h-5 w-5 rounded-full border border-gray-300"></span>
-                  }
+                <li class="group flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3">
+                  <button type="button" (click)="toggleComplete(task)" class="shrink-0" [attr.aria-label]="task.isCompleted ? 'Позначити невиконаною' : 'Позначити виконаною'">
+                    @if (task.isCompleted) {
+                      <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">✓</span>
+                    } @else {
+                      <span class="block h-5 w-5 rounded-full border border-gray-300 hover:border-emerald-500"></span>
+                    }
+                  </button>
 
                   <div class="min-w-0 flex-1">
                     <p class="truncate font-medium" [class.line-through]="task.isCompleted" [class.text-gray-400]="task.isCompleted">
@@ -61,6 +63,14 @@
                   <span class="w-20 shrink-0 text-right text-sm text-gray-500">
                     {{ task.dueDate ? (task.dueDate | date:'d MMM y') : '—' }}
                   </span>
+
+                  <button type="button" (click)="deleteTask(task)"
+                          class="shrink-0 text-gray-300 opacity-0 transition hover:text-red-500 group-hover:opacity-100"
+                          aria-label="Видалити задачу">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7" />
+                    </svg>
+                  </button>
                 </li>
               }
             </ul>

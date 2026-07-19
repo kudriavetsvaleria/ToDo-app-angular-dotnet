@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskService } from '../../../core/services/task.service';
 import { CategoryService } from '../../../core/services/category.service';
-import { Task, CreateTaskRequest } from '../../../core/models/task.model';
+import { Task, CreateTaskRequest, UpdateTaskRequest } from '../../../core/models/task.model';
 import { Category } from '../../../core/models/category.model';
 
 @Component({
@@ -68,6 +68,30 @@ export class TaskListComponent implements OnInit {
       this.taskService.getTasks(1, 1, null, category.id).subscribe((result) => {
         this.categoryCounts[category.id] = result.totalCount;
       });
+    });
+  }
+
+  toggleComplete(task: Task): void {
+    const request: UpdateTaskRequest = {
+      title: task.title,
+      description: task.description,
+      isCompleted: !task.isCompleted,
+      dueDate: task.dueDate,
+      categoryId: task.categoryId,
+    };
+
+    this.taskService.updateTask(task.id, request).subscribe(() => {
+      task.isCompleted = !task.isCompleted;
+    });
+  }
+
+  deleteTask(task: Task): void {
+    this.taskService.deleteTask(task.id).subscribe(() => {
+      if (this.tasks.length === 1 && this.page > 1) {
+        this.page--;
+      }
+      this.loadTasks();
+      this.loadCounts();
     });
   }
 

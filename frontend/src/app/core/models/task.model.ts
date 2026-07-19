@@ -16,6 +16,14 @@ export interface CreateTaskRequest {
   categoryId: number | null;
 }
 
+export interface UpdateTaskRequest {
+  title: string;
+  description: string | null;
+  isCompleted: boolean;
+  dueDate: string | null;
+  categoryId: number | null;
+}
+
 export interface PagedResult<T> {
   items: T[];
   page: number;
