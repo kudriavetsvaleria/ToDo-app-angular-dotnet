@@ -36,6 +36,9 @@
           </button>
         </div>
 
+        <input [formControl]="searchControl" type="text" placeholder="Пошук за назвою…"
+               class="mb-3 w-full shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none" />
+
         <div class="min-h-0 flex-1 overflow-y-auto">
           @if (tasks.length === 0) {
             <p class="text-gray-500">Немає задач.</p>

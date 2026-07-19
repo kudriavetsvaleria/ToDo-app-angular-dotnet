@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { TaskService } from '../../../core/services/task.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { Task, CreateTaskRequest, UpdateTaskRequest } from '../../../core/models/task.model';
@@ -29,6 +30,9 @@ export class TaskListComponent implements OnInit {
 
   today = new Date();
 
+  searchControl = new FormControl('');
+  searchTerm = '';
+
   private fb = inject(FormBuilder);
 
   form = this.fb.group({
@@ -50,10 +54,19 @@ export class TaskListComponent implements OnInit {
       this.categories = categories;
       this.loadCounts();
     });
+
+    this.searchControl.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((value) => {
+        this.searchTerm = value ?? '';
+        this.page = 1;
+        this.loadTasks();
+      });
   }
 
   loadTasks(): void {
-    this.taskService.getTasks(this.page, this.pageSize, null, this.selectedCategoryId).subscribe((result) => {
+    const search = this.searchTerm.trim() || null;
+    this.taskService.getTasks(this.page, this.pageSize, search, this.selectedCategoryId).subscribe((result) => {
       this.tasks = result.items;
       this.totalPages = result.totalPages;
       this.totalCount = result.totalCount;
