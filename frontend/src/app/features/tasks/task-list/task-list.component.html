@@ -1,11 +1,145 @@
-<h1 class="text-3xl font-bold text-emerald-600">Task list</h1>
+<div class="flex h-screen flex-col overflow-hidden p-8 pr-1">
+  <div class="mx-auto flex h-full w-full max-w-7xl flex-col">
 
-@if (tasks.length === 0) {
-  <p class="text-gray-500">No tasks yet.</p>
-} @else {
-  <ul>
-    @for (task of tasks; track task.id) {
-      <li>{{ task.title }}</li>
-    }
-  </ul>
-}
+    <h1 class="mb-4 shrink-0 text-2xl font-semibold text-gray-800">{{ today | date:'d MMMM y' }}</h1>
+
+    <div class="flex min-h-0 flex-1 items-stretch gap-6">
+
+      <aside class="flex w-75 shrink-0 flex-col overflow-y-auto rounded-2xl border border-gray-200 bg-white p-4">
+        <p class="mb-2 text-center text-base font-medium text-gray-500">Категорії</p>
+
+        <button (click)="selectCategory(null)"
+                class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left"
+                [class.bg-emerald-50]="selectedCategoryId === null"
+                [class.text-emerald-700]="selectedCategoryId === null">
+          <span>Всі задачі</span>
+          <span class="text-xs text-gray-400">{{ allCount }}</span>
+        </button>
+
+        @for (category of categories; track category.id) {
+          <button (click)="selectCategory(category.id)"
+                  class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left"
+                  [class.bg-emerald-50]="selectedCategoryId === category.id"
+                  [class.text-emerald-700]="selectedCategoryId === category.id">
+            <span>{{ category.name }}</span>
+            <span class="text-xs text-gray-400">{{ categoryCounts[category.id] }}</span>
+          </button>
+        }
+      </aside>
+
+      <section class="flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5">
+        <div class="relative mb-3 flex shrink-0 items-center">
+          <h2 class="w-full text-center text-base font-medium text-gray-500">Задачі на сьогодні</h2>
+          <button (click)="openPanel()"
+                  class="absolute right-0 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+            + Додати задачу
+          </button>
+        </div>
+
+        <div class="min-h-0 flex-1 overflow-y-auto">
+          @if (tasks.length === 0) {
+            <p class="text-gray-500">Немає задач.</p>
+          } @else {
+            <ul class="space-y-2">
+              @for (task of tasks; track task.id) {
+                <li class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3">
+                  @if (task.isCompleted) {
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">✓</span>
+                  } @else {
+                    <span class="h-5 w-5 rounded-full border border-gray-300"></span>
+                  }
+
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-medium" [class.line-through]="task.isCompleted" [class.text-gray-400]="task.isCompleted">
+                      {{ task.title }}
+                    </p>
+                    @if (task.description) {
+                      <p class="truncate text-sm text-gray-500">{{ task.description }}</p>
+                    }
+                  </div>
+
+                  <span class="w-20 shrink-0 text-right text-sm text-gray-500">
+                    {{ task.dueDate ? (task.dueDate | date:'d MMM y') : '—' }}
+                  </span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        @if (totalPages > 1) {
+          <div class="mt-4 flex shrink-0 items-center justify-center gap-1">
+            <button (click)="goToPage(page - 1)" [disabled]="page === 1"
+                    class="rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-40">
+              ‹
+            </button>
+
+            @for (p of pages; track p) {
+              <button (click)="goToPage(p)"
+                      class="min-w-8 rounded-md px-3 py-1 text-sm"
+                      [class.bg-emerald-600]="p === page"
+                      [class.text-white]="p === page"
+                      [class.text-gray-600]="p !== page"
+                      [class.hover:bg-gray-100]="p !== page">
+                {{ p }}
+              </button>
+            }
+
+            <button (click)="goToPage(page + 1)" [disabled]="page === totalPages"
+                    class="rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-40">
+              ›
+            </button>
+          </div>
+        }
+      </section>
+
+      <aside class="shrink-0 overflow-hidden transition-all duration-300"
+             [class.w-0]="!isPanelOpen"
+             [class.w-96]="isPanelOpen">
+        <form [formGroup]="form" (ngSubmit)="submit()" class="flex h-full w-96 flex-col overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-800">Нова задача</h2>
+            <button type="button" (click)="closePanel()" class="text-gray-400 hover:text-gray-600">✕</button>
+          </div>
+
+          <label class="mb-1 block text-sm text-gray-600">Назва</label>
+          <input formControlName="title" type="text"
+                 class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none" />
+          @if (form.controls.title.invalid && form.controls.title.touched) {
+            <p class="mb-3 text-sm text-red-600">Вкажіть назву</p>
+          } @else {
+            <div class="mb-3"></div>
+          }
+
+          <label class="mb-1 block text-sm text-gray-600">Опис</label>
+          <textarea formControlName="description" rows="3"
+                    class="mb-3 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"></textarea>
+
+          <label class="mb-1 block text-sm text-gray-600">Термін</label>
+          <input formControlName="dueDate" type="date"
+                 class="mb-3 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none" />
+
+          <label class="mb-1 block text-sm text-gray-600">Категорія</label>
+          <select formControlName="categoryId"
+                  class="mb-6 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none">
+            <option [ngValue]="null">Без категорії</option>
+            @for (category of categories; track category.id) {
+              <option [ngValue]="category.id">{{ category.name }}</option>
+            }
+          </select>
+
+          <div class="mt-auto flex gap-3">
+            <button type="submit"
+                    class="flex-1 rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700">
+              Зберегти
+            </button>
+            <button type="button" (click)="closePanel()"
+                    class="rounded-md border border-gray-300 px-4 py-2 text-gray-600 hover:bg-gray-50">
+              Скасувати
+            </button>
+          </div>
+        </form>
+      </aside>
+    </div>
+  </div>
+</div>
