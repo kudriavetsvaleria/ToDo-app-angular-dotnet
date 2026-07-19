@@ -17,6 +17,7 @@ export class TaskListComponent implements OnInit {
   categories: Category[] = [];
   selectedCategoryId: number | null = null;
   isPanelOpen = false;
+  editingTask: Task | null = null;
 
   page = 1;
   pageSize = 8;
@@ -114,12 +115,25 @@ export class TaskListComponent implements OnInit {
   }
 
   openPanel(): void {
+    this.editingTask = null;
     this.form.reset({ categoryId: this.selectedCategoryId });
+    this.isPanelOpen = true;
+  }
+
+  openEdit(task: Task): void {
+    this.editingTask = task;
+    this.form.reset({
+      title: task.title,
+      description: task.description ?? '',
+      dueDate: task.dueDate ? task.dueDate.substring(0, 10) : '',
+      categoryId: task.categoryId,
+    });
     this.isPanelOpen = true;
   }
 
   closePanel(): void {
     this.isPanelOpen = false;
+    this.editingTask = null;
   }
 
   submit(): void {
@@ -128,19 +142,36 @@ export class TaskListComponent implements OnInit {
     }
 
     const value = this.form.value;
-    const request: CreateTaskRequest = {
-      title: value.title!,
-      description: value.description || null,
-      dueDate: value.dueDate || null,
-      categoryId: value.categoryId ? Number(value.categoryId) : null,
-    };
 
-    this.taskService.createTask(request).subscribe(() => {
-      this.page = 1;
-      this.loadTasks();
-      this.loadCounts();
-      this.closePanel();
-    });
+    if (this.editingTask) {
+      const request: UpdateTaskRequest = {
+        title: value.title!,
+        description: value.description || null,
+        isCompleted: this.editingTask.isCompleted,
+        dueDate: value.dueDate || null,
+        categoryId: value.categoryId ? Number(value.categoryId) : null,
+      };
+
+      this.taskService.updateTask(this.editingTask.id, request).subscribe(() => {
+        this.loadTasks();
+        this.loadCounts();
+        this.closePanel();
+      });
+    } else {
+      const request: CreateTaskRequest = {
+        title: value.title!,
+        description: value.description || null,
+        dueDate: value.dueDate || null,
+        categoryId: value.categoryId ? Number(value.categoryId) : null,
+      };
+
+      this.taskService.createTask(request).subscribe(() => {
+        this.page = 1;
+        this.loadTasks();
+        this.loadCounts();
+        this.closePanel();
+      });
+    }
   }
 
 }
