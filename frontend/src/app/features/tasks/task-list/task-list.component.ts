@@ -33,6 +33,8 @@ export class TaskListComponent implements OnInit {
   searchControl = new FormControl('');
   searchTerm = '';
 
+  newCategoryControl = new FormControl('');
+
   private fb = inject(FormBuilder);
 
   form = this.fb.group({
@@ -106,6 +108,32 @@ export class TaskListComponent implements OnInit {
       }
       this.loadTasks();
       this.loadCounts();
+    });
+  }
+
+  addCategory(): void {
+    const name = this.newCategoryControl.value?.trim();
+    if (!name) {
+      return;
+    }
+
+    this.categoryService.createCategory(name).subscribe((category) => {
+      this.categories.push(category);
+      this.categoryCounts[category.id] = 0;
+      this.newCategoryControl.reset('');
+    });
+  }
+
+  deleteCategory(category: Category): void {
+    this.categoryService.deleteCategory(category.id).subscribe(() => {
+      this.categories = this.categories.filter((c) => c.id !== category.id);
+      delete this.categoryCounts[category.id];
+
+      if (this.selectedCategoryId === category.id) {
+        this.selectCategory(null);
+      } else {
+        this.loadTasks();
+      }
     });
   }
 
