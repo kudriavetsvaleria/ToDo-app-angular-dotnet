@@ -35,6 +35,9 @@ export class TaskListComponent implements OnInit {
 
   newCategoryControl = new FormControl('');
 
+  editingCategoryId: number | null = null;
+  editCategoryControl = new FormControl('');
+
   private fb = inject(FormBuilder);
 
   form = this.fb.group({
@@ -121,6 +124,28 @@ export class TaskListComponent implements OnInit {
       this.categories.push(category);
       this.categoryCounts[category.id] = 0;
       this.newCategoryControl.reset('');
+    });
+  }
+
+  startEditCategory(category: Category): void {
+    this.editingCategoryId = category.id;
+    this.editCategoryControl.setValue(category.name);
+  }
+
+  cancelEditCategory(): void {
+    this.editingCategoryId = null;
+  }
+
+  saveCategory(category: Category): void {
+    const name = this.editCategoryControl.value?.trim();
+    if (!name || name === category.name) {
+      this.cancelEditCategory();
+      return;
+    }
+
+    this.categoryService.updateCategory(category.id, name).subscribe(() => {
+      category.name = name;
+      this.cancelEditCategory();
     });
   }
 
