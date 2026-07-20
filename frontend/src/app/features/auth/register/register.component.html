@@ -1,25 +1,25 @@
 <div class="flex min-h-screen items-center justify-center">
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()"
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()"
         class="w-80 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-    <h1 class="mb-6 text-center text-2xl font-semibold text-gray-800">Вхід</h1>
+    <h1 class="mb-6 text-center text-2xl font-semibold text-gray-800">Реєстрація</h1>
 
     <label class="mb-1 block text-sm text-gray-600">Ім'я користувача</label>
     <input type="text" formControlName="username"
            class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
-    @if (loginForm.controls.username.invalid && loginForm.controls.username.touched) {
+    @if (registerForm.controls.username.invalid && registerForm.controls.username.touched) {
       <p class="mb-3 text-xs text-red-500">Вкажіть ім'я користувача</p>
     }
 
     <label class="mb-1 mt-3 block text-sm text-gray-600">Пароль</label>
     <input type="password" formControlName="password"
            class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
-    @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+    @if (registerForm.controls.password.invalid && registerForm.controls.password.touched) {
       <p class="mb-3 text-xs text-red-500">Вкажіть пароль</p>
     }
 
-    <button type="submit" [disabled]="loginForm.invalid"
+    <button type="submit" [disabled]="registerForm.invalid"
             class="mt-4 w-full rounded-md bg-blue-600 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-slate-300">
-      Увійти
+      Зареєструватися
     </button>
 
     @if (errorMessage) {
@@ -27,8 +27,8 @@
     }
 
     <p class="mt-5 text-center text-sm text-gray-600">
-      Немає акаунту?
-      <a routerLink="/register" class="text-blue-600 hover:underline">Зареєструватися</a>
+      Вже маєте акаунт?
+      <a routerLink="/login" class="text-blue-600 hover:underline">Увійти</a>
     </p>
   </form>
 </div>

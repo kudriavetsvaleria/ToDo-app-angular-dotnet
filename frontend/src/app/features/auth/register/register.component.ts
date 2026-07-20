@@ -4,15 +4,14 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  templateUrl: './register.component.html'
 })
-export class LoginComponent {
+export class RegisterComponent {
   errorMessage = '';
 
-  loginForm = new FormGroup({
+  registerForm = new FormGroup({
     username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
@@ -20,20 +19,22 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
+    if (this.registerForm.invalid) {
       return;
     }
 
-    const credentials = this.loginForm.getRawValue();
+    const credentials = this.registerForm.getRawValue();
 
-    this.authService.login(credentials).subscribe({
+    this.authService.register(credentials).subscribe({
       next: (response) => {
         this.authService.saveToken(response.token);
         this.authService.saveUsername(response.username);
         this.router.navigate(['/tasks']);
       },
-      error: () => {
-        this.errorMessage = 'Невірне ім\'я користувача або пароль';
+      error: (error) => {
+        this.errorMessage = error.status === 409
+          ? 'Це ім\'я користувача вже зайняте'
+          : 'Не вдалося зареєструватися';
       },
     });
   }
