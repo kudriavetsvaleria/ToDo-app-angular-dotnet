@@ -5,23 +5,28 @@
 
     <div class="flex min-h-0 flex-1 items-stretch gap-6">
 
-      <aside class="flex w-75 shrink-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-5">
+      <aside class="flex w-75 shrink-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
         <div class="mb-3 flex h-10 shrink-0 items-center">
           <p class="w-full text-center text-base font-medium text-gray-500">Категорії</p>
         </div>
 
         <input [formControl]="newCategoryControl" (keyup.enter)="addCategory()" type="text"
                placeholder="+ Нова категорія"
-               class="mb-3 w-full shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none" />
+               class="mb-3 w-full shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
 
         <div class="min-h-0 flex-1 overflow-y-auto">
-        <button (click)="selectCategory(null)"
-                class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left"
-                [class.bg-emerald-50]="selectedCategoryId === null"
-                [class.text-emerald-700]="selectedCategoryId === null">
-          <span>Всі задачі</span>
-          <span class="text-xs text-gray-400">{{ allCount }}</span>
-        </button>
+        <div class="flex items-center rounded-md pr-2"
+             [class.bg-blue-50]="selectedCategoryId === null">
+          <button (click)="selectCategory(null)"
+                  class="min-w-0 flex-1 truncate px-3 py-2 text-left"
+                  [class.text-blue-700]="selectedCategoryId === null">
+            Всі задачі
+          </button>
+
+          <span class="w-10 shrink-0"></span>
+
+          <span class="ml-2 w-4 shrink-0 text-right text-xs text-gray-400">{{ allCount }}</span>
+        </div>
 
         @for (category of categories; track category.id) {
           @if (editingCategoryId === category.id) {
@@ -30,19 +35,18 @@
                    (keyup.escape)="cancelEditCategory()"
                    (blur)="cancelEditCategory()"
                    type="text"
-                   class="w-full rounded-md border border-emerald-500 px-3 py-2 focus:outline-none" />
+                   class="w-full rounded-md border border-blue-500 px-3 py-2 focus:outline-none" />
           } @else {
             <div class="group flex items-center rounded-md pr-2"
-                 [class.bg-emerald-50]="selectedCategoryId === category.id">
+                 [class.bg-blue-50]="selectedCategoryId === category.id">
               <button (click)="selectCategory(category.id)"
-                      class="flex min-w-0 flex-1 items-center justify-between px-3 py-2 text-left"
-                      [class.text-emerald-700]="selectedCategoryId === category.id">
-                <span class="truncate">{{ category.name }}</span>
-                <span class="ml-2 text-xs text-gray-400">{{ categoryCounts[category.id] }}</span>
+                      class="min-w-0 flex-1 truncate px-3 py-2 text-left"
+                      [class.text-blue-700]="selectedCategoryId === category.id">
+                {{ category.name }}
               </button>
 
               <button (click)="startEditCategory(category)"
-                      class="ml-1 shrink-0 text-gray-300 opacity-0 transition hover:text-emerald-600 group-hover:opacity-100"
+                      class="ml-1 shrink-0 text-gray-300 opacity-0 transition hover:text-blue-600 group-hover:opacity-100"
                       aria-label="Перейменувати категорію">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
@@ -56,23 +60,25 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7" />
                 </svg>
               </button>
+
+              <span class="ml-2 w-4 shrink-0 text-right text-xs text-gray-400">{{ categoryCounts[category.id] }}</span>
             </div>
           }
         }
         </div>
       </aside>
 
-      <section class="flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5">
+      <section class="flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
         <div class="relative mb-3 flex h-10 shrink-0 items-center">
           <h2 class="w-full text-center text-base font-medium text-gray-500">Задачі</h2>
           <button (click)="openPanel()"
-                  class="absolute right-0 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                  class="absolute right-0 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
             + Додати задачу
           </button>
         </div>
 
         <input [formControl]="searchControl" type="text" placeholder="Пошук за назвою…"
-               class="mb-3 w-full shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none" />
+               class="mb-3 w-full shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
 
         <div class="min-h-0 flex-1 overflow-y-auto">
           @if (tasks.length === 0) {
@@ -80,12 +86,13 @@
           } @else {
             <ul class="space-y-2">
               @for (task of tasks; track task.id) {
-                <li class="group flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3">
+                <li class="group flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 transition-colors hover:border-blue-300"
+                    [class.bg-slate-50]="task.isCompleted">
                   <button type="button" (click)="toggleComplete(task)" class="shrink-0" [attr.aria-label]="task.isCompleted ? 'Позначити невиконаною' : 'Позначити виконаною'">
                     @if (task.isCompleted) {
-                      <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">✓</span>
+                      <span class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white">✓</span>
                     } @else {
-                      <span class="block h-5 w-5 rounded-full border border-gray-300 hover:border-emerald-500"></span>
+                      <span class="block h-5 w-5 rounded-full border border-gray-300 hover:border-blue-500"></span>
                     }
                   </button>
 
@@ -99,7 +106,7 @@
                   </div>
 
                   <span class="w-20 shrink-0 text-right text-sm text-gray-500">
-                    {{ task.dueDate ? (task.dueDate | date:'d MMM y') : '—' }}
+                    {{ task.dueDate ? (task.dueDate | date:'d MMM y') : '' }}
                   </span>
 
                   <button type="button" (click)="deleteTask(task)"
@@ -125,7 +132,7 @@
             @for (p of pages; track p) {
               <button (click)="goToPage(p)"
                       class="min-w-8 rounded-md px-3 py-1 text-sm"
-                      [class.bg-emerald-600]="p === page"
+                      [class.bg-blue-600]="p === page"
                       [class.text-white]="p === page"
                       [class.text-gray-600]="p !== page"
                       [class.hover:bg-gray-100]="p !== page">
@@ -144,7 +151,7 @@
       <aside class="shrink-0 overflow-hidden transition-all duration-300"
              [class.w-0]="!isPanelOpen"
              [class.w-96]="isPanelOpen">
-        <form [formGroup]="form" (ngSubmit)="submit()" class="flex h-full w-96 flex-col overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6">
+        <form [formGroup]="form" (ngSubmit)="submit()" class="flex h-full w-96 flex-col overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
           <div class="mb-6 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-gray-800">{{ editingTask ? 'Редагувати задачу' : 'Нова задача' }}</h2>
             <button type="button" (click)="closePanel()" class="text-gray-400 hover:text-gray-600">✕</button>
@@ -152,7 +159,7 @@
 
           <label class="mb-1 block text-sm text-gray-600">Назва</label>
           <input formControlName="title" type="text"
-                 class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none" />
+                 class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
           @if (form.controls.title.invalid && form.controls.title.touched) {
             <p class="mb-3 text-sm text-red-600">Вкажіть назву</p>
           } @else {
@@ -161,15 +168,15 @@
 
           <label class="mb-1 block text-sm text-gray-600">Опис</label>
           <textarea formControlName="description" rows="3"
-                    class="mb-3 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"></textarea>
+                    class="mb-3 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"></textarea>
 
           <label class="mb-1 block text-sm text-gray-600">Термін</label>
           <input formControlName="dueDate" type="date"
-                 class="mb-3 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none" />
+                 class="mb-3 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
 
           <label class="mb-1 block text-sm text-gray-600">Категорія</label>
           <select formControlName="categoryId"
-                  class="mb-6 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:outline-none">
+                  class="mb-6 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none">
             <option [ngValue]="null">Без категорії</option>
             @for (category of categories; track category.id) {
               <option [ngValue]="category.id">{{ category.name }}</option>
@@ -178,7 +185,7 @@
 
           <div class="mt-auto flex gap-3">
             <button type="submit"
-                    class="flex-1 rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700">
+                    class="flex-1 rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700">
               Зберегти
             </button>
             <button type="button" (click)="closePanel()"

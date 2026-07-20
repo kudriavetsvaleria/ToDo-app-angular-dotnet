@@ -1,25 +1,25 @@
 <div class="min-h-screen flex items-center justify-center">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="bg-white p-8 rounded-lg shadow w-80">
-    <h1 class="text-2xl font-semibold text-slate-800 mb-6 text-center">Sign in</h1>
+    <h1 class="text-2xl font-semibold text-slate-800 mb-6 text-center">Вхід</h1>
 
-    <label class="block text-sm text-slate-600 mb-1">Username</label>
+    <label class="block text-sm text-slate-600 mb-1">Ім'я користувача</label>
     <input
       type="text"
       formControlName="username"
       class="w-full border border-slate-300 rounded px-3 py-2 mb-1"
     />
     @if (loginForm.controls.username.invalid && loginForm.controls.username.touched) {
-      <p class="text-red-500 text-xs mb-3">Username is required</p>
+      <p class="text-red-500 text-xs mb-3">Вкажіть ім'я користувача</p>
     }
 
-    <label class="block text-sm text-slate-600 mb-1 mt-3">Password</label>
+    <label class="block text-sm text-slate-600 mb-1 mt-3">Пароль</label>
     <input
       type="password"
       formControlName="password"
       class="w-full border border-slate-300 rounded px-3 py-2 mb-1"
     />
     @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
-      <p class="text-red-500 text-xs mb-3">Password is required</p>
+      <p class="text-red-500 text-xs mb-3">Вкажіть пароль</p>
     }
 
     <button

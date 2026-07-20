@@ -32,7 +32,7 @@ export class LoginComponent {
         this.router.navigate(['/tasks']);
       },
       error: () => {
-        this.errorMessage = 'Invalid username or password';
+        this.errorMessage = 'Невірне ім\'я користувача або пароль';
       },
     });
   }
