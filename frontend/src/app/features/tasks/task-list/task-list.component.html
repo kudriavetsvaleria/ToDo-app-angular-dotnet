@@ -5,7 +5,9 @@
 
     <div class="flex min-h-0 flex-1 items-stretch gap-6">
 
-      <aside class="flex w-75 shrink-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+      <div class="flex w-75 shrink-0 flex-col gap-3">
+
+      <aside class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
         <div class="mb-3 flex h-10 shrink-0 items-center">
           <p class="w-full text-center text-base font-medium text-gray-500">Категорії</p>
         </div>
@@ -66,7 +68,18 @@
           }
         }
         </div>
+
       </aside>
+
+      <div class="flex shrink-0 items-center justify-between gap-2 rounded-2xl border border-gray-200 bg-white px-5 py-6 shadow-sm">
+        <span class="min-w-0 flex-1 truncate text-sm font-medium text-gray-700">{{ username }}</span>
+        <button (click)="logout()"
+                class="shrink-0 rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-700">
+          Вийти
+        </button>
+      </div>
+
+      </div>
 
       <section class="flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
         <div class="relative mb-3 flex h-10 shrink-0 items-center">

@@ -1,5 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { TaskService } from '../../../core/services/task.service';
@@ -29,6 +31,7 @@ export class TaskListComponent implements OnInit {
   categoryCounts: Record<number, number> = {};
 
   today = new Date();
+  username = '';
 
   searchControl = new FormControl('');
   searchTerm = '';
@@ -49,10 +52,18 @@ export class TaskListComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private authService: AuthService,
+    private router: Router
   ) { }
 
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
   ngOnInit(): void {
+    this.username = this.authService.getUsername() ?? '';
     this.loadTasks();
 
     this.categoryService.getCategories().subscribe((categories) => {

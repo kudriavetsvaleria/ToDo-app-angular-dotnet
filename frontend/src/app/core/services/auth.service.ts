@@ -10,6 +10,7 @@ import { AuthRequest, AuthResponse } from '../models/auth.model';
 export class AuthService {
   private readonly apiUrl = `${environment.apiUrl}/auth`;
   private readonly tokenKey = 'auth_token';
+  private readonly usernameKey = 'auth_username';
 
   constructor(private http: HttpClient) { }
 
@@ -29,11 +30,20 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  saveUsername(username: string): void {
+    localStorage.setItem(this.usernameKey, username);
+  }
+
+  getUsername(): string | null {
+    return localStorage.getItem(this.usernameKey);
+  }
+
   isLoggedIn(): boolean {
     return this.getToken() !== null;
   }
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.usernameKey);
   }
 }

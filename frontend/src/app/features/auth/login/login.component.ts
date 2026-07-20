@@ -29,6 +29,7 @@ export class LoginComponent {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         this.authService.saveToken(response.token);
+        this.authService.saveUsername(response.username);
         this.router.navigate(['/tasks']);
       },
       error: () => {
