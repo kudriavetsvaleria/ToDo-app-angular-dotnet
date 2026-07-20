@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ToDoApp.Domain.Dtos;
 
 /// <summary>
@@ -6,6 +8,9 @@ namespace ToDoApp.Domain.Dtos;
 /// </summary>
 public class CategoryRequest
 {
+    // Length mirrors the Category.Name column configured in ApplicationDbContext.
+    [Required(ErrorMessage = "Name is required.")]
+    [MaxLength(100, ErrorMessage = "Name must be at most 100 characters.")]
     public string Name { get; set; } = string.Empty;
 }
 
