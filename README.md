@@ -1,9 +1,31 @@
-# ToDo App — Angular + .NET Core
+# ToDo App - Angular + .NET Core
 
 A to-do application with categories, search and pagination.
 Test task (Trainee/Junior): Angular SPA + ASP.NET Core REST API, EF Core, JWT auth, 4-layer architecture.
 
-![ToDo app — main screen](assets/screenshot.png)
+![ToDo app - main screen](assets/screenshot.png)
+
+## Quick start
+
+Requires .NET 8 SDK, Node.js 18+ and SQL Server Express.
+
+```bash
+# 1. Backend (terminal 1)
+cd backend
+dotnet user-secrets set "Jwt:Key" "<any-long-random-string-at-least-32-chars>" --project ToDoApp.Api
+dotnet ef database update --project ToDoApp.DataAccess --startup-project ToDoApp.Api
+dotnet run --project ToDoApp.Api
+
+# 2. Frontend (terminal 2)
+cd frontend
+npm install
+npm start
+```
+
+Open `http://localhost:4200` and register a new account.
+API: `http://localhost:5110`, Swagger: `http://localhost:5110/swagger`.
+
+See [Getting started](#getting-started) below for details.
 
 ## Tech stack
 
@@ -12,14 +34,14 @@ Test task (Trainee/Junior): Angular SPA + ASP.NET Core REST API, EF Core, JWT au
 
 ## Features
 
-- **Auth** — registration and login, JWT stored in `localStorage`; protected routes; automatic redirect to login on `401`
-- **Tasks** — create, edit, delete, mark as done/undone; title, description, due date, category
-- **Categories** — create, rename, delete; deleting a category keeps its tasks (they become uncategorized)
-- **Filtering** — by category, with task counts in the sidebar
-- **Search** — by task title, server-side, with debounce
-- **Pagination** — server-side
-- **Data isolation** — every user only sees their own tasks and categories
-- **Validation** — on both sides: Angular Reactive Forms (UX) and data annotations on request DTOs (security)
+- **Auth** - registration and login, JWT stored in `localStorage`; protected routes; automatic redirect to login on `401`
+- **Tasks** - create, edit, delete, mark as done/undone; title, description, due date, category
+- **Categories** - create, rename, delete; deleting a category keeps its tasks (they become uncategorized)
+- **Filtering** - by category, with task counts in the sidebar
+- **Search** - by task title, server-side, with debounce
+- **Pagination** - server-side
+- **Data isolation** - every user only sees their own tasks and categories
+- **Validation** - on both sides: Angular Reactive Forms (UX) and data annotations on request DTOs (security)
 
 UI language: Ukrainian.
 
@@ -109,4 +131,4 @@ All endpoints except `/api/auth/*` require an `Authorization: Bearer <token>` he
 
 - Passwords are stored as BCrypt hashes, never in plain text.
 - The JWT lifetime is set in `appsettings.json` (`Jwt:ExpiryMinutes`, currently 24 hours).
-- `Jwt:Key` is intentionally not committed — set it via user-secrets as shown above.
+- `Jwt:Key` is intentionally not committed - set it via user-secrets as shown above.
